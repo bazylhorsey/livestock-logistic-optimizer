@@ -44,24 +44,26 @@ There are a number of factors which might be relevant in the “real world” bu
 considered in this model due the difficulty involved in representing them mathematically. Some
 of these factors include:
 
-Bird mortality: typically mortality is roughly 3% in brooders and 12% in finishers. Bird
+- Bird mortality: typically mortality is roughly 3% in brooders and 12% in finishers. Bird
 mortality could be described as stochastic and is dependent on travel time, weather, bird
 stress, and overall bird health
-Birds of the same age in different brooders: if birds of the same age are raised in different
+
+- Birds of the same age in different brooders: if birds of the same age are raised in different
 brooders it is permissible for them to be placed at the same finisher
 
-Inexactness of capacity: while brooders and finishers have certain capacities it is unusual
+- Inexactness of capacity: while brooders and finishers have certain capacities it is unusual
 for them to contain that exact amount of birds. For example, sometimes a finisher barn
 may be slightly overfilled with 11,500 birds or underfilled with only 10,000 birds.
 Additionally, sometimes brooders will contain fewer than their capacity allows due to
 mortality or the hatchery slightly underdelivering on an order
 
-Inexactness of growing and cleaning times: often birds may stay in a brooder or finisher
+- Inexactness of growing and cleaning times: often birds may stay in a brooder or finisher
 for longer than 35 or 105 days. For example, if the processing facility is unable to keep
 up with the production schedule (which was determine 1-2 years in advance) due to
 insufficient labor, birds may end up staying in a finisher for an additional 30 days or
 more. Additionally, a farmer may take shorter or longer than 19 or 20 days to clean their
 barn after it is emptied
+
 While important to consider, these points will not be factored into this particular model
 formulation. However, should the company wish to run a full-scale model if this preliminary one
 proves successful some of these may be wise to consider.
