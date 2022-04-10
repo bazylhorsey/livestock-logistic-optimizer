@@ -33,7 +33,7 @@ m = gp.Model('brooder_allocation')
 
 x = m.addVars(NUM_OF_BROODERS, NUM_OF_FINISHERS, vtype=GRB.BINARY, name='X')
 
-m.addConstrs((gp.quicksum(x[b][f] for b in range(NUM_OF_BROODERS)) == 1 for f in range(NUM_OF_FINISHERS)), name="Assignment")
+m.addConstrs((gp.quicksum(x[b,f] for b in range(NUM_OF_BROODERS)) == 1 for f in range(NUM_OF_FINISHERS)), name="Assignment")
 
 # m.addConstrs(
 #     (gp.quicksum(FK * finisher_capacity[f] * x[b][f]
@@ -46,7 +46,7 @@ m.addConstrs((gp.quicksum(x[b][f] for b in range(NUM_OF_BROODERS)) == 1 for f in
 #         for f in range(0, NUM_OF_FINISHERS)
 #     )
 
-m.setObjective((FK * gp.quicksum(distances.get(b,f)*x[b][f]) 
+m.setObjective((FK * gp.quicksum(distances[(b,f)]*x[b][f]) 
     for b in range(NUM_OF_BROODERS) for f in range(NUM_OF_FINISHERS)), GRB.MINIMIZE)
 
 m.optimize()
