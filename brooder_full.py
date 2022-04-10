@@ -6,17 +6,18 @@ from gurobipy import GRB
 
 # Parameters
 
-distances_frame = pd.read_csv("data/test/distance.csv", header=None)
-brooders_frame = pd.read_csv("data/test/brooder.csv")
-finishers_frame = pd.read_csv("data/test/finisher.csv")
+distances_frame = pd.read_csv("data/large/distance.csv", header=None)
+brooders_frame = pd.read_csv("data/large/brooder.csv")
+finishers_frame = pd.read_csv("data/large/finisher.csv")
 
 # FINISHERS = [*range(0, len(df.axes[0]) + 1)]
 # BROODERS = [*range(0, len(df.axes[1]) + 1)]
 
+
 brooder_capacity = []
 for index, row in brooders_frame.iterrows():
     brooder_capacity.append(row[0])
-    
+
 finisher_capacity = []
 finisher_distance_k = []
 for index, row in finishers_frame.iterrows():
@@ -24,9 +25,9 @@ for index, row in finishers_frame.iterrows():
     finisher_distance_k.append(row[1])
 
 distances = {}
-for i, row in distances_frame.iterrows():
-    for j in range(0, len(row)):
-        distances[(j, i)] = row[j]
+for f, row in distances_frame.iterrows():
+    for b in range(0, len(row)):
+        distances[(b, f)] = row[b]
 edge, distance = gp.multidict(distances)
 
 NUM_OF_BROODERS = len(brooder_capacity)
@@ -36,24 +37,48 @@ FK = 2.944
 
 # MIP  model formulation
 
-m = gp.Model('brooder_allocation')
+m = gp.Model("brooder_allocation")
 
-x = m.addVars(NUM_OF_BROODERS, NUM_OF_FINISHERS, vtype=GRB.BINARY, name='X')
-m.addConstrs((gp.quicksum(x[b,f] for b in range(NUM_OF_BROODERS)) == 1 for f in range(NUM_OF_FINISHERS)), name="Assignment")
+x = m.addVars(NUM_OF_BROODERS, NUM_OF_FINISHERS, vtype=GRB.BINARY, name="X")
 m.addConstrs(
-    (gp.quicksum(FK * finisher_capacity[f] * x[b,f]
-        for f in range(0, NUM_OF_FINISHERS)) >= BK * brooder_capacity[b]
-    ) for b in range(0, NUM_OF_BROODERS)
+    (
+        gp.quicksum(x[b, f] for b in range(NUM_OF_BROODERS)) == 1
+        for f in range(NUM_OF_FINISHERS)
+    ),
+    name="Assignment",
 )
-m.setObjective((FK * gp.quicksum(distances[(b,f)] * x[b,f] for b in range(NUM_OF_BROODERS) for f in range(NUM_OF_FINISHERS))), GRB.MINIMIZE)
+m.addConstrs(
+    (
+        gp.quicksum(
+            FK * finisher_capacity[f] * x[b, f] for f in range(0, NUM_OF_FINISHERS)
+        )
+        >= BK * brooder_capacity[b]
+        for b in range(0, NUM_OF_BROODERS)
+    ),
+    name="Capactiy",
+)
+m.setObjective(
+    (
+        FK
+        * gp.quicksum(
+            distances[b, f] * x[b, f]
+            for b in range(NUM_OF_BROODERS)
+            for f in range(NUM_OF_FINISHERS)
+        )
+    ),
+    GRB.MINIMIZE,
+)
 
 
 m.optimize()
-vals = m.getAttr('x', x)
+vals = m.getAttr("x", x)
 selected = gp.tuplelist((i, j) for i, j in vals.keys() if vals[i, j] == 1.0)
 total = 0
+count = 0
 for i in selected:
-    print(distances.get(i))
-    total += distances.get(i)
+    print(f"({i[0]+1},{i[1]+1}):{distances.get(i) * FK}")
+    total += distances.get(i) * FK
+    count += 1
+print(f"number of points {count}")
 print(total)
-m.write('out.sol')
+m.write("out.sol")
