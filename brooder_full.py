@@ -6,9 +6,9 @@ from gurobipy import GRB
 
 # Parameters
 
-distances_frame = pd.read_csv("data/test/distance.csv", header=None)
-brooders_frame = pd.read_csv("data/test/brooder.csv")
-finishers_frame = pd.read_csv("data/test/finisher.csv")
+distances_frame = pd.read_csv("data/large/distance.csv", header=None)
+brooders_frame = pd.read_csv("data/large/brooder.csv")
+finishers_frame = pd.read_csv("data/large/finisher.csv")
 
 brooder_capacity = []
 for index, row in brooders_frame.iterrows():
@@ -57,7 +57,7 @@ m.setObjective(
     (
         FK
         * gp.quicksum(
-            distances[b, f] * x[b, f]
+            distances[b, f] * finisher_distance_k[f] * x[b, f]
             for b in range(NUM_OF_BROODERS)
             for f in range(NUM_OF_FINISHERS)
         )
@@ -72,8 +72,5 @@ selected = gp.tuplelist((i, j) for i, j in vals.keys() if vals[i, j] == 1.0)
 df = pd.DataFrame(np.zeros((NUM_OF_FINISHERS, NUM_OF_BROODERS)))
 vals = m.getAttr("x", x)
 selected = gp.tuplelist((i, j) for i, j in vals.keys() if vals[i, j] > 0)
-for i in selected:
-    print(selected)
-    df.at[i[1],i[0]]=distances.get(i,j) * FK
-df
+
 m.write("out.sol")
