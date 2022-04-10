@@ -10,10 +10,6 @@ distances_frame = pd.read_csv("data/large/distance.csv", header=None)
 brooders_frame = pd.read_csv("data/large/brooder.csv")
 finishers_frame = pd.read_csv("data/large/finisher.csv")
 
-# FINISHERS = [*range(0, len(df.axes[0]) + 1)]
-# BROODERS = [*range(0, len(df.axes[1]) + 1)]
-
-
 brooder_capacity = []
 for index, row in brooders_frame.iterrows():
     brooder_capacity.append(row[0])
